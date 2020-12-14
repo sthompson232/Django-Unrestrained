@@ -1,5 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-def index(response):
-    return HttpResponse("<h1>This is my index page</h1>")
+
+
+def index(request):
+    return render(request, 'django_app/index.html', {'title': 'Home'})
+
+
+
+def about(request):
+    return render(request, 'django_app/about.html', {'title': 'About'})
