@@ -3,9 +3,19 @@
 
 <h1>Data Analysis Page</h1>
 
-<h3>Comments</h3>
-{% for comment in comments %}
-{{comment}}
-{% endfor %}
+<!-- VIEW COMMENTS -->
+<h5>Comments</h5>
+<ul>
+    {% for comment in comments %}
+    <li>{{comment}}</li>
+    {% endfor %}
+</ul>
+
+<!-- ADD COMMENT -->
+<form method="post">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button type="submit", name="save">Submit</button>
+</form>
         
 {% endblock %}

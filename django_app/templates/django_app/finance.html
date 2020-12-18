@@ -3,12 +3,19 @@
 
 <h1>Finance Page</h1>
 
+<!-- VIEW COMMENTS -->
+<h5>Comments</h5>
+<ul>
+    {% for comment in comments %}
+    <li>{{comment}}</li>
+    {% endfor %}
+</ul>
 
-<h3>Comments</h3>
-{% for comment in comments %}
-{{comment}}
-{% endfor %}
-
-
+<!-- ADD COMMENT -->
+<form method="post">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button type="submit", name="save">Submit</button>
+</form>
 
 {% endblock %}
