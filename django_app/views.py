@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 from .forms import AddComment
 from .models import Comment
 
@@ -29,7 +30,7 @@ def form_page(request):
     return render(request, 'django_app/test.html', {'form':form})
 
 
-
+@login_required
 def finance(request):
     comments = {
         'comments': Comment.objects.filter(page="finance")
@@ -37,7 +38,7 @@ def finance(request):
     return render(request, 'django_app/finance.html', comments)
 
 
-
+@login_required
 def data_analysis(request):
     comments = {
         'comments': Comment.objects.filter(page="data_analysis")

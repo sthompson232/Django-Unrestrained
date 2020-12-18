@@ -1,0 +1,13 @@
+{% extends "django_app/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<h1>Login Page</h1>
+
+<form method="POST">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit">Login</button>
+</form>
+<p>Need an account? Create an account <a href="{% url 'register' %}">here</a></p>
+{% endblock %}
