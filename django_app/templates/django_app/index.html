@@ -1,6 +1,10 @@
 {% extends "django_app/base.html" %}
 {% block content %}
 
-        <h1>Index Page</h1>
-        
+<h1>Index Page</h1>
+<p>Welcome to Django Unrestrained. Built on Django, this website features many different Python libraries primarily used for analysing data such as Numpy, Pandas and matplotlib. Please create an account to view the different projects, you only need a username and password!</p>      
+
+<h5>Choose a project below</h5>
+<p><a class="dropdown-item" href="{% url 'finance' %}">Finance</a></p>
+<p><a class="dropdown-item" href="{% url 'data_analysis' %}">Data Analysis</a></p>
 {% endblock %}
