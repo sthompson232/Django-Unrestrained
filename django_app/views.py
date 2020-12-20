@@ -21,7 +21,6 @@ def finance(request):
     # GETS MOST RECENT QUERY FROM DB
     latest_query = FredQueryData.objects.filter(author = request.user.id).first()
     data_type = latest_query.data_type
-    # print(data_type)
     start_date = latest_query.start_date
     end_date = latest_query.end_date
     # GRAPH VARIABLE EQUALS PANDAS DATAFRAME
