@@ -4,6 +4,13 @@
 <h1>Data Analysis Page</h1>
 <p>Welcome to the data analysis page where we will use sample data to look at different things, theres an interactive form where you can put data in and the table will change.</p>
 <p>Maybe have a table where a user can add their movie rating and itll add it to a table with other people's movie ratings</p>
+
+
+{% if graph %}
+    <img src="data:image/png;base64, {{chart|safe}}">
+{% endif %}
+
+
 <!-- VIEW COMMENTS -->
 <h5>Comments</h5>
 <ul>

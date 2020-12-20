@@ -9,3 +9,10 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'{self.author.username}: {self.content}'
+
+
+class FredQueryData(models.Model):
+    start_date = models.DateField(max_length=50)
+    end_date = models.DateField(max_length=50)
+    data_type = models.CharField(max_length=50)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -1,0 +1,9 @@
+{% extends "django_app/base.html" %}
+{% block content %}
+
+<h1>Test Page</h1>
+
+{% if chart %}
+<img src="data:image/png;base64, {{chart|safe}}">
+{% endif %}
+{% endblock %}

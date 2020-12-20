@@ -8,11 +8,20 @@
 <p>Form to decide which stuff to import from fred like SP500, NASDAQ100, they can choose what and the date range, it can display varaince and growth with shift and stuff</p>
 <p>Also include a world bank section with the GDP of different countries. LOOK AT US FINANCIAL HEALTH PROJECT FOR REFERENCE</p>
 
-{% if chart %}
+{% if graph %}
     <img src="data:image/png;base64, {{chart|safe}}">
 {% endif %}
 <br>
 <br>
+<h5>New Query</h5>
+<p>To enter a new query please make sure you don't use any leading zeros in the dates. For example 1st January 2010 would be written as 2010, 1, 1. If you are unsure of the data type you would like to search for here are a few examples... NASDAQ100, SP500, GDP</p>
+
+<!-- FRED QUERY -->
+<form method="post">
+    {% csrf_token %}
+    {{fred_form.as_p}}
+    <button type="submit", name="save">Search</button>
+</form>
 
 <!-- VIEW COMMENTS -->
 <h5>Comments</h5>

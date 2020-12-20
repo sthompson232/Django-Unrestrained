@@ -11,6 +11,18 @@ def get_prices(data_type, start_date, end_date):
     return web.DataReader(data_type, 'fred', start_date, end_date)
 
 
+def get_fred_query(data_type, start_date, end_date):
+    fred_dataframe = get_prices(data_type, start_date, end_date)
+    # print(fred_dataframe)
+    # CREATE VARIABLES FOR GRAPH
+    x = fred_dataframe.index
+    y = fred_dataframe[data_type]
+    title = f"Quantity of {data_type} (US)"
+    x_label = "Time"
+    y_label = f"{data_type} quantity"
+    # print(y)
+    graph = get_plot(x, y, title, x_label, y_label)
+    return graph
 
 # FUNCTION TO ALLOW MATPLOTLIB TO WORK ON DJANGO. THIS IS CALLED IN ALL OF THE OTHER GRAPH FUNCTIONS
 # I DO NOT FULLY UNDERSTAND THIS MYSELF!

@@ -3,8 +3,8 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from .forms import AddComment, FredQuery
-from .models import Comment
-from .utils import get_plot, get_prices
+from .models import Comment, FredQueryData
+from .utils import get_plot, get_prices, get_fred_query
 from datetime import datetime
 
 
@@ -13,25 +13,39 @@ def index(request):
 
 
 
+##########################################################################################################################################
+
 @login_required
 def finance(request):
 
+    # GETS MOST RECENT QUERY FROM DB
+    latest_query = FredQueryData.objects.filter(author = request.user.id).first()
+    data_type = latest_query.data_type
+    # print(data_type)
+    start_date = latest_query.start_date
+    end_date = latest_query.end_date
+    # GRAPH VARIABLE EQUALS PANDAS DATAFRAME
+    graph = get_fred_query(data_type, start_date, end_date)
 
-    # if form is submitted then do this code with form data
-    start_date = datetime(2010, 1, 1)
-    end_date = datetime(2020, 1, 1)
-    data_type = "SP500"
+    # FRED QUERY FORM
+    if request.method == 'POST':
+        fred_form = FredQuery(request.POST)
 
-    # GETS PANDAS DATAFRAME
-    fred_dataframe = get_prices(data_type, start_date, end_date)
+        if fred_form.is_valid():
+            # CREATING A VARIABLE FOR EACH PIECE OF DATA ENTERED
+            # start_date = datetime(fred_form.cleaned_data['start_date'])
+            # end_date = datetime(fred_form.cleaned_data['end_date'])
+            start_date = datetime(2011, 1, 1)
+            end_date = datetime(2019, 1, 1)
+            data_type = fred_form.cleaned_data['data_type']
+            author_id = request.user.id
 
-    # CREATE VARIABLES FOR GRAPH
-    x = fred_dataframe.index
-    y = fred_dataframe[data_type]
-    title = f"Quantity of {data_type} (US)"
-    x_label = "Time"
-    y_label = f"{data_type} quantity"
-    chart = get_plot(x, y, title, x_label, y_label)
+            # SAVING QUERY TO SQL DB
+            new_fred_query = FredQueryData(start_date=start_date, end_date=end_date, data_type=data_type, author_id=author_id)
+            new_fred_query.save()
+
+    else:
+        fred_form = FredQuery()
 
 
     # ADD COMMENT FORM
@@ -51,12 +65,27 @@ def finance(request):
     # LIST EXISTING COMMENTS
     comments = Comment.objects.filter(page="finance")
 
-    return render(request, 'django_app/finance.html', {"form":form, "comments":comments, "chart":chart})
+    return render(request, 'django_app/finance.html', {"form":form, "fred_form":fred_form, "comments":comments, "graph":graph})
 
 
+
+##########################################################################################################################################
 
 @login_required
 def data_analysis(request):
+
+
+    fred_dataframe = get_prices('NASDAQ100', '2010, 1, 1', '2019, 1, 1')
+    # CREATE VARIABLES FOR GRAPH
+    x = fred_dataframe.index
+    y = fred_dataframe['NASDAQ100']
+    title = "Quantity of (US)"
+    x_label = "Time"
+    y_label = "quantity"
+    graph = get_plot(x, y, title, x_label, y_label)
+
+
+
         # ADD COMMENT FORM
     if request.method =='POST':
         form = AddComment(request.POST)
@@ -73,4 +102,18 @@ def data_analysis(request):
 
     # LIST EXISTING COMMENTS
     comments = Comment.objects.filter(page="data_analysis")
-    return render(request, 'django_app/data_analysis.html', {"form":form, "comments":comments})
+    return render(request, 'django_app/data_analysis.html', {"form":form, "comments":comments, "graph":graph})
+
+
+
+##########################################################################################################################################
+
+@login_required
+def test(request):
+    x = [1, 2, 3]
+    y = [43, 13, 23]
+    title = "Test"
+    xlabel = "X label"
+    ylabel = "Y label"
+    chart = get_plot(x,y, title, xlabel, ylabel)
+    return render(request, 'django_app/test.html', {"chart":chart})
