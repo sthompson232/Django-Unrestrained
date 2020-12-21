@@ -14,9 +14,8 @@ def get_prices(data_type, start_date, end_date):
 def get_fred_query(data_type, start_date, end_date):
     fred_dataframe = get_prices(data_type, start_date, end_date)
     # CREATE VARIABLES FOR GRAPH
-    x = fred_dataframe.index
-    y = fred_dataframe[data_type]
-    print(y)
+    x = fred_dataframe.index.tolist()
+    y = fred_dataframe[data_type].tolist()
     title = f"Quantity of {data_type} (US)"
     x_label = "Time"
     y_label = f"{data_type} quantity"

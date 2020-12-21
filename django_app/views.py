@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from .forms import AddComment, FredQuery
 from .models import Comment, FredQueryData
-from .utils import get_plot, get_prices, get_fred_query
+from .utils import get_plot, get_prices, get_fred_query, get_graph
 from datetime import datetime
 
 
@@ -21,10 +21,17 @@ def finance(request):
     # GETS MOST RECENT QUERY FROM DB
     latest_query = FredQueryData.objects.filter(author = request.user.id).first()
     data_type = latest_query.data_type
-    start_date = latest_query.start_date
-    end_date = latest_query.end_date
+    start_date = str(latest_query.start_date)
+    end_date = str(latest_query.end_date)
+    print(start_date)
+    print(type(start_date))
     # GRAPH VARIABLE EQUALS PANDAS DATAFRAME
     graph = get_fred_query(data_type, start_date, end_date)
+    
+
+
+
+
 
     # FRED QUERY FORM
     if request.method == 'POST':
@@ -109,4 +116,22 @@ def data_analysis(request):
 
 @login_required
 def test(request):
-    return render(request, 'django_app/test.html')
+
+    # if form is submitted then do this code with form data
+    start_date = datetime(2010, 1, 1)
+    end_date = datetime(2020, 1, 1)
+    data_type = "SP500"
+
+    # GETS PANDAS DATAFRAME
+    fred_dataframe = get_prices(data_type, start_date, end_date)
+    fred_dataframe.columns = ['date']
+    # CREATE VARIABLES FOR GRAPH
+    x = fred_dataframe.index
+    y = fred_dataframe["date"].tolist()
+    print(y)
+    title = f"Quantity of {data_type} (US)"
+    x_label = "Time"
+    y_label = f"{data_type} quantity"
+    chart = get_plot(x, y, title, x_label, y_label)
+
+    return render(request, 'django_app/test.html', {"chart":chart})
