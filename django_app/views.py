@@ -109,10 +109,4 @@ def data_analysis(request):
 
 @login_required
 def test(request):
-    x = [1, 2, 3]
-    y = [43, 13, 23]
-    title = "Test"
-    xlabel = "X label"
-    ylabel = "Y label"
-    chart = get_plot(x,y, title, xlabel, ylabel)
-    return render(request, 'django_app/test.html', {"chart":chart})
+    return render(request, 'django_app/test.html')
