@@ -1,41 +1,60 @@
 {% extends "django_app/base.html" %}
 {% block content %}
 
-<h1>Finance Page</h1>
+<h1>The Stock Market</h1>
 <br>
-<p>Welcome to the finance page, where we will analyse financial data using.... looking at the stock market and risk/reward etc, log return, variance</p>
-
-<p>Form to decide which stuff to import from fred like SP500, NASDAQ100, they can choose what and the date range, it can display varaince and growth with shift and stuff</p>
-<p>Also include a world bank section with the GDP of different countries. LOOK AT US FINANCIAL HEALTH PROJECT FOR REFERENCE</p>
+<div class="container border">
+    <div class="row">
+        <div class="col-sm bg-light">
+            <p>Welcome to the finance page, create queries within the stock market between a certain time period. This graph pulls information from the Federal Reserve Bank of St. Louis (FRED).</p>
+            <h5>Important Information:</h5>
+            <ol>
+                <li>Data may not be available from certain years.</li>
+                <li>There may be gaps in the Federal Reserve Bank of St. Louis' data.</li>
+                <li>For more information, please visit FRED's website <a href="https://fred.stlouisfed.org/" target="_blank">here.</a></li>
+            </ol>
+        </div>
+        <div class="col-sm bg-light">
+            <!-- FRED QUERY -->
+            <h5>New Query</h5>
+            <form method="post">
+                {% csrf_token %}
+                {{fred_form.as_p}}
+                <button type="submit", name="query">Search</button>
+            </form>
+        </div>
+    </div>
+</div>
 
 {% if graph %}
 <img src="data:image/png;base64, {{graph|safe}}">
 {% endif %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <h5>Volatility (Variance): {{variance}}</h5>
+        </div>
+        <div class="col-sm">
+
+        </div>
+    </div>
+</div>
 <br>
+<div class="container bg-light text-center border">
+    <!-- VIEW COMMENTS -->
+    <h5>Comments</h5>
+        {% for comment in comments %}
+        <p>{{comment}}</p>
+        {% endfor %}
+
+    <!-- ADD COMMENT -->
+    <form method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button type="submit", name="save">Submit</button>
+    </form>
+</div>
 <br>
-<h5>New Query</h5>
-<p>To enter a new query please make sure you don't use any leading zeros in the dates. For example 1st January 2010 would be written as 2010, 1, 1. If you are unsure of the data type you would like to search for here are a few examples... NASDAQ100, SP500, GDP</p>
-
-<!-- FRED QUERY -->
-<form method="post">
-    {% csrf_token %}
-    {{fred_form.as_p}}
-    <button type="submit", name="save">Search</button>
-</form>
-
-<!-- VIEW COMMENTS -->
-<h5>Comments</h5>
-<ul>
-    {% for comment in comments %}
-    <li>{{comment}}</li>
-    {% endfor %}
-</ul>
-
-<!-- ADD COMMENT -->
-<form method="post">
-    {% csrf_token %}
-    {{form.as_p}}
-    <button type="submit", name="save">Submit</button>
-</form>
-
+<p><b>How the page works - </b>Using pandas datareader I was able to access the FRED API using parameters submitted in the query form. The information was received in a pandas dataframe which subsequently was transformed into a matplotlib plot.</p>
 {% endblock %}
