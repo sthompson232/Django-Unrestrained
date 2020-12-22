@@ -1,24 +1,34 @@
 {% extends "django_app/base.html" %}
 {% block content %}
 
-<h1>Data Analysis Page</h1>
-<p>Welcome to the data analysis page where we will use sample data to look at different things, theres an interactive form where you can put data in and the table will change.</p>
-<p>Maybe have a table where a user can add their movie rating and itll add it to a table with other people's movie ratings</p>
+<h1>Film Ratings</h1>
 
-<div>
-<form method="post">
-    {% csrf_token %}
-    {{rating_form.as_p}}
-    <button type="submit", name="save">Submit</button>
-</form>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-4 bg-light border">
+            <div>
+                <p>Welcome to the film ratings page. Here you can rate a selection of films out of 10 and see your ratings on the horizontal bar chart. You can also compare all of the films ratings from all of the other users.</p>
+                <p>Add your film ratings in the form below!</p>
+            </div>
+            <div>
+                <form method="post">
+                    {% csrf_token %}
+                    {{rating_form.as_p}}
+                    <button type="submit", name="save">Submit</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-8">
+                {% if chart %}
+                <img class="center-block" src="data:image/png;base64, {{chart|safe}}">
+                {% endif %}
+        </div>
+    </div>
 </div>
 
-{% if chart %}
-<img src="data:image/png;base64, {{chart|safe}}">
-{% endif %}
-
-<!-- VIEW COMMENTS -->
-<div class="container bg-light border">
+<!-- COMMENTS -->
+<div class="container">
+  <div class="bg-light border col-md-8">
     <!-- VIEW COMMENTS -->
     <h5>Comments</h5>
     <ul>
@@ -33,5 +43,6 @@
         {{form.as_p}}
         <button type="submit", name="save">Submit</button>
     </form>
+    </div>
 </div>
 {% endblock %}

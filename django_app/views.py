@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
 from .forms import AddComment, FredQuery, FilmRating, films
 from .models import Comment, FredQueryData, FilmRatings
-from .utils import get_plot, get_prices, get_fred_query, get_graph, get_variance, get_bar
+from .utils import get_plot, get_prices, get_fred_query, get_graph, get_variance, get_bar, get_barh
 from datetime import datetime
 
 
@@ -114,25 +114,20 @@ def data_analysis(request):
         my_films = my_ratings.values('film')
         my_points = my_ratings.values('rating')
         # NEED FILM AND RATINGS VALUES AND THEN APPLY THEM TO X AND Y
-        print(my_films)
-        print(my_points)
 
-        x = []
-        y = []
+        x_rating = []
+        y_film = []
 
         for elem in my_films:
             for film in elem.values():
-                x.append(film)
+                y_film.append(film)
 
         for elem in my_points:
             for point in elem.values():
-                y.append(point)
+                x_rating.append(point)
 
 
-        print(x)
-        print(y)
-
-        chart = get_bar(x, y)
+        chart = get_barh(x_rating, y_film)
     else:
         chart = get_bar(films, [(x, x) for x in range(11)])
 
