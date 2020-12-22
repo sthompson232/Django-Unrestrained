@@ -41,12 +41,14 @@
     </div>
 </div>
 <br>
-<div class="container bg-light text-center border">
+<div class="container bg-light border">
     <!-- VIEW COMMENTS -->
     <h5>Comments</h5>
+    <ul>
         {% for comment in comments %}
-        <p>{{comment}}</p>
+        <li style="list-style-type: none;">{{comment}}</li>
         {% endfor %}
+    </ul>
 
     <!-- ADD COMMENT -->
     <form method="post">
