@@ -2,9 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView
-from .forms import AddComment, FredQuery
-from .models import Comment, FredQueryData
-from .utils import get_plot, get_prices, get_fred_query, get_graph, get_variance
+from .forms import AddComment, FredQuery, FilmRating, films
+from .models import Comment, FredQueryData, FilmRatings
+from .utils import get_plot, get_prices, get_fred_query, get_graph, get_variance, get_bar
 from datetime import datetime
 
 
@@ -44,6 +44,7 @@ def finance(request):
         data_type = latest_query.data_type
         start_date = latest_query.start_date
         end_date = latest_query.end_date
+
         # GRAPH VARIABLE EQUALS PANDAS DATAFRAME
         graph = get_fred_query(data_type, start_date, end_date)
         variance = get_variance(data_type, start_date, end_date)
@@ -70,7 +71,7 @@ def finance(request):
     # LIST EXISTING COMMENTS
     comments = Comment.objects.filter(page="finance")
 
-    return render(request, 'django_app/finance.html', {"form":form, "fred_form":fred_form, "comments":comments, "graph":graph, "variance":variance})
+    return render(request, 'django_app/finance.html', {"title":"The Stock Market", "form":form, "fred_form":fred_form, "comments":comments, "graph":graph, "variance":variance})
 
 
 
@@ -79,36 +80,79 @@ def finance(request):
 @login_required
 def data_analysis(request):
 
+    if request.method == 'POST' and 'rating' in request.POST:
+        rating_form = FilmRating(request.POST)
 
-    fred_dataframe = get_prices('NASDAQ100', '2010, 1, 1', '2019, 1, 1')
-    # CREATE VARIABLES FOR GRAPH
-    x = fred_dataframe.index
-    y = fred_dataframe['NASDAQ100']
-    title = "Quantity of (US)"
-    x_label = "Time"
-    y_label = "quantity"
-    graph = get_plot(x, y, title, x_label, y_label)
+        if rating_form.is_valid():
+            # VARIABLES EQUAL FORM DATA
+            film = rating_form.cleaned_data['film']
+            rating = rating_form.cleaned_data['rating']
+            author_id = request.user.id
+            # VARIABLE EQUALS NEW DB ENTRY
+            new_rating = FilmRatings(film=film, rating=rating, author_id=author_id)
+
+            # IF RATING WITH SAME AUTHOR ID AND FILM EXISTS
+            if FilmRatings.objects.filter(author = request.user.id, film = film):
+                # DELETE THE PAST RATING
+                FilmRatings.objects.filter(author = request.user.id, film = film).delete()
+                # SAVE DB ENTRY
+                new_rating.save()
+                return HttpResponseRedirect('/data-analysis')    
+            else:
+                new_rating.save()
+                return HttpResponseRedirect('/data-analysis')
+
+    else:
+        rating_form = FilmRating()
 
 
+
+    # IF CURRENT USER HAS ANY RATINGS ON DB
+    if FilmRatings.objects.filter(author = request.user.id).all():
+        # THEN VARIABLE EQUALS ALL EXISTING RATINGS
+        my_ratings = FilmRatings.objects.filter(author = request.user.id).all()
+        my_films = my_ratings.values('film')
+        my_points = my_ratings.values('rating')
+        # NEED FILM AND RATINGS VALUES AND THEN APPLY THEM TO X AND Y
+        print(my_films)
+        print(my_points)
+
+        x = []
+        y = []
+
+        for elem in my_films:
+            for film in elem.values():
+                x.append(film)
+
+        for elem in my_points:
+            for point in elem.values():
+                y.append(point)
+
+
+        print(x)
+        print(y)
+
+        chart = get_bar(x, y)
+    else:
+        chart = get_bar(films, [(x, x) for x in range(11)])
 
         # ADD COMMENT FORM
     if request.method =='POST' and 'comment' in request.POST:
         form = AddComment(request.POST)
-        print(form.data)
         if form.is_valid():
             content = form.cleaned_data['comment']
             page = "data_analysis"
             author_id = request.user.id
             new_comment = Comment(content=content, page=page, author_id=author_id)
             new_comment.save()
-            return HttpResponseRedirect('/finance')
+            return HttpResponseRedirect('/data-analysis')
 
     else:
         form = AddComment()
 
     # LIST EXISTING COMMENTS
     comments = Comment.objects.filter(page="data_analysis")
-    return render(request, 'django_app/data_analysis.html', {"form":form, "comments":comments, "graph":graph})
+    return render(request, 'django_app/data_analysis.html', {"title":"Data Analysis", "form":form, "comments":comments, "rating_form":rating_form, "chart":chart})
 
 
 

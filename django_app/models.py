@@ -16,3 +16,9 @@ class FredQueryData(models.Model):
     end_date = models.DateField(max_length=50)
     data_type = models.CharField(max_length=50)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+
+class FilmRatings(models.Model):
+    film = models.CharField(max_length=50)
+    rating = models.IntegerField()
+    author = models.ForeignKey(User, on_delete=models.CASCADE)

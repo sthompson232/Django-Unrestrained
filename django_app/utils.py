@@ -69,3 +69,20 @@ def get_plot(x, y, title, x_label, y_label):
 
     graph = get_graph()
     return graph
+
+
+def get_bar(x, y):
+    plt.switch_backend('AGG')
+
+    plt.subplot()
+    plt.figure(figsize=(10,5))
+    plt.title("My Film Ratings")
+    plt.bar(x, y)
+    plt.xticks(rotation=30)
+    plt.xlabel("Films")
+    plt.ylabel("Rating")
+    plt.grid(True)
+    plt.subplots_adjust(bottom=0.2)
+
+    chart = get_graph()
+    return chart
