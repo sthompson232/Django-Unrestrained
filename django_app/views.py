@@ -129,7 +129,7 @@ def data_analysis(request):
 
         chart = get_barh(x_rating, y_film)
     else:
-        chart = get_bar(films, [(x, x) for x in range(11)])
+        chart = ""
 
         # ADD COMMENT FORM
     if request.method =='POST' and 'comment' in request.POST:
